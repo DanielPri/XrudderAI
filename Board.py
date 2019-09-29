@@ -9,7 +9,7 @@ class Board:
 
     def get_tile(self, row, col):
         row_value = self.letterMap[row]
-        return self.tiles[row_value][col - 1]
+        return self.tiles[col - 1][row_value]
 
     def draw(self):
         print()
