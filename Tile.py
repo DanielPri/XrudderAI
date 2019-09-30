@@ -1,15 +1,12 @@
+from TileColor import TileColor
+
+
 class Tile:
     def __init__(self):
-        self.tileType = dict(color='____ ')
+        self.tileColor = TileColor.BLANK
 
-    def set_null(self):
-        self.tileType['color'] = '____ '
-
-    def set_white(self):
-        self.tileType['color'] = 'white'
-
-    def set_black(self):
-        self.tileType['color'] = 'black'
+    def set_color(self, tile_color):
+        self.tileColor = tile_color
 
     def get_color(self):
-        return self.tileType['color']
+        return self.tileColor
