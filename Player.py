@@ -1,5 +1,6 @@
 from TileColor import TileColor
 
+
 class Player:
 
     def __init__(self, name, color):
