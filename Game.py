@@ -42,21 +42,21 @@ class Game:
         while n <= 30:
             print(self.player1.name, 'Turn', n)
             self.player1.play_turn(self.board)
-            self.checkWinCondition()
+            self.win_condition()
             n += 1
             print(self.player2.name, 'Turn', n)
             self.player2.play_turn(self.board)
-            self.checkWinCondition()
+            self.win_condition()
             n += 1
         print("GAME FINISHED")
         print("Game has reached the maximum number of turns!")
 
-    def checkWinCondition(self):
-        self.player1.playedPieces
-        print("Player 1 Played Pieces", self.player1.playedPieces)
-        self.player2.playedPieces
-        print("Played 2 Played Pieces", self.player2.playedPieces)
-        if len(self.player1.playedPieces) >= 5 or len(self.player2.playedPieces) >= 5:
+    def win_condition(self):
+        self.player1.played_pieces
+        print("Player", self.player1.name, "Played Pieces", self.player1.played_pieces)
+        self.player2.played_pieces
+        print("Played", self.player2.name, "Played Pieces", self.player2.played_pieces)
+        if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
             print("Checking for Win Condition")
 
 # Testing if the board object works
