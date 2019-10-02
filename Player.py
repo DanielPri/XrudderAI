@@ -6,6 +6,7 @@ class Player:
     def __init__(self, name, color):
         self.name = name
         self.color = color
+        self.playedPieces = []
 
     def play_turn(self, board):
         tile = None
@@ -38,6 +39,7 @@ class Player:
                     tile = None
                 else:
                     tile.set_color(self.color)
+                    self.playedPieces.append(position)
                     board.draw()
             elif choice is 2:
                 position = (input(self.name + " select a token on the board: ")).upper().replace(" ", "")
@@ -63,6 +65,8 @@ class Player:
                         tile = None
                     else:
                         newTile.set_color(self.color)
+                        self.playedPieces.append(newPosition)
+                        self.playedPieces.remove(position)
                         tile.set_color(TileColor.BLANK)
                         board.draw()
                 else:

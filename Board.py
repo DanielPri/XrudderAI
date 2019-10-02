@@ -19,7 +19,7 @@ class Board:
                 print(10 - i, end='  ')
             for j in range(len(self.tiles[0])):
                 print(' ' + self.tiles[9 - i][j].get_color().value + ' ', end='')
-            print('\n   --------------------------------------------------------------------------------')
+            print('\n   -----------------------------------------------------------------------------------')
         print('     A      B      C      D      E      F      G      H      I      J      K      L')
 
     def is_valid_position(self, row, col):
