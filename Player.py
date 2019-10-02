@@ -85,6 +85,6 @@ class Player:
                         tile.set_color(TileColor.BLANK)
                         board.draw()
                 else:
-                    print("wrong choice")
+                    print("You don't have a token at this location")
                     tile = None
                     continue
