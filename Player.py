@@ -13,7 +13,7 @@ class Player:
             position = input(self.name + " select a position: ")
             if len(position) is 2 and position[0].isalpha() and position[1].isdigit():
                 tile = board.get_tile(position[0], position[1])
-                if tile.get_color().value is not TileColor.BLANK.value:
+                if tile is not None and tile.get_color().value is not TileColor.BLANK.value:
                     print("That position is already occupied!")
                     tile = None
             else:
