@@ -11,10 +11,15 @@ class Game:
         self.player2 = None
         self.select_players()
         self.play()
+        self.turns = 0
 
     def select_players(self):
         while 1 is 1:
-            num_of_players = int(input("Please enter the number of human players (1 or 2): "))
+            try:
+                num_of_players = int(input("Please enter the number of human players (1 or 2): "))
+            except:
+                print("Please Enter a valid number")
+                continue
 
             if num_of_players <= 0 or num_of_players > 2:
                 continue
@@ -33,11 +38,14 @@ class Game:
 
     def play(self):
         self.board.draw()
-        while 1 is 1:
+        n = 1
+        while n <= 30:
+            print(self.player1.name, 'Turn', n)
             self.player1.play_turn(self.board)
-            self.board.draw()
+            n += 1
+            print(self.player2.name, 'Turn', n)
             self.player2.play_turn(self.board)
-            self.board.draw()
+            n += 1
 
 # Testing if the board object works
 
