@@ -8,11 +8,7 @@ class Board:
         self.letterMap = dict(A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7, I=8, J=9, K=10, L=11)
 
     def get_tile(self, row, col):
-        if self.is_valid_position(row, col):
-            return self.tiles[int(col) - 1][self.letterMap[row]]
-        else:
-            print('Not a valid tile!')
-            return None
+        return self.tiles[int(col) - 1][self.letterMap[row]]
 
     def draw(self):
         print()
@@ -23,7 +19,7 @@ class Board:
                 print(10 - i, end='  ')
             for j in range(len(self.tiles[0])):
                 print(' ' + self.tiles[9 - i][j].get_color().value + ' ', end='')
-            print('\n   --------------------------------------------------------------------------------')
+            print('\n   -----------------------------------------------------------------------------------')
         print('     A      B      C      D      E      F      G      H      I      J      K      L')
 
     def is_valid_position(self, row, col):
