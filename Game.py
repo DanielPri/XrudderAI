@@ -10,8 +10,8 @@ class Game:
         self.player1 = None
         self.player2 = None
         self.select_players()
+        self.moves = 0
         self.play()
-        self.turns = 0
 
     def select_players(self):
         while 1 is 1:
@@ -38,23 +38,94 @@ class Game:
 
     def play(self):
         self.board.draw()
+        m = 1
         n = 1
-        while n <= 30:
-            print(self.player1.name, 'Turn', n)
-            self.player1.play_turn()
-            self.win_condition()
-            n += 1
+        while True:
+            if self.player1.finished and self.player2.finished:
+                print("Game finished in a draw!")
+                exit(0)
+            print(self.player1.name, 'Turn', m)
+            self.moves += self.player1.play_turn(self.moves)
+            self.win_condition(self.player1.last_played)
+            m += 1
+            self.board.draw()
             print(self.player2.name, 'Turn', n)
-            self.player2.play_turn()
-            self.win_condition()
+            self.moves += self.player2.play_turn(self.moves)
+            self.win_condition(self.player2.last_played)
             n += 1
-        print("GAME FINISHED")
-        print("Game has reached the maximum number of turns!")
+            self.board.draw()
 
-    def win_condition(self):
-        self.player1.played_pieces
-        print("Player", self.player1.name, "Played Pieces", self.player1.played_pieces)
-        self.player2.played_pieces
-        print("Played", self.player2.name, "Played Pieces", self.player2.played_pieces)
-        if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
-            print("Checking for Win Condition")
+    def win_condition(self, last_played):
+
+        letter_map = self.board.get_letter_map()
+        letter_array = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
+
+        left_exists = False
+        right_exists = False
+        up_exists = False
+        down_exists = False
+
+        if last_played[0] is not "A":
+            left_exists = True
+            west = letter_array[(letter_map[last_played[0]] - 1)]
+            if last_played[1] is not "10":
+                up_exists = True
+                north = int(last_played[1]) + 1
+                top_left = self.board.get_tile(west, north)
+                print(str(west) + str(north) + " is " + str(top_left.get_color()))
+            if last_played[1] is not "1":
+                down_exists = True
+                south = int(last_played[1]) - 1
+                bottom_left = self.board.get_tile(west, south)
+                print(str(west) + str(south) + " is " + str(bottom_left.get_color()))
+            left = self.board.get_tile(west, int(last_played[1]))
+            print(str(west) + str(int(last_played[1])) + " is " + str(left.get_color()))
+        if last_played[0] is not "L":
+            right_exists = True
+            east = letter_array[(letter_map[last_played[0]] + 1)]
+            if last_played[1] is not "10":
+                up_exists = True
+                north = int(last_played[1]) + 1
+                top_right = self.board.get_tile(east, north)
+                print(str(east) + str(north) + " is " + str(top_right.get_color()))
+            if last_played[1] is not "1":
+                down_exists = True
+                south = int(last_played[1]) - 1
+                bottom_right = self.board.get_tile(east, south)
+                print(str(east) + str(south) + " is " + str(bottom_right.get_color()))
+            right = self.board.get_tile(east, int(last_played[1]))
+            print(str(east) + str(int(last_played[1])) + " is " + str(right.get_color()))
+
+        if left_exists and right_exists and up_exists and down_exists:
+            if self.board.get_tile(letter_array[(letter_map[last_played[0]])], int(last_played[1])).get_color() == TileColor.WHITE:
+                if top_left.get_color() == top_right.get_color() == bottom_left.get_color() == bottom_right.get_color() == TileColor.WHITE:
+                    if left.get_color() == right.get_color() == TileColor.BLACK:
+                        print("Strikethrough at white X centered at " + str(last_played) + "!")
+                    else:
+                        print(str(self.player1.name) + " wins!")
+                        exit(0)
+                else:
+                    if top_left.get_color() == TileColor.WHITE:
+                        self.win_condition(str(west) + str(north))
+                    elif top_right.get_color() == TileColor.WHITE:
+                        self.win_condition(str(east) + str(north))
+                    elif bottom_left.get_color() == TileColor.WHITE:
+                        self.win_condition(str(west) + str(south))
+                    elif bottom_right.get_color() == TileColor.WHITE:
+                        self.win_condition(str(east) + str(south))
+            elif self.board.get_tile(letter_array[(letter_map[last_played[0]])], int(last_played[1])).get_color() == TileColor.BLACK:
+                if top_left.get_color() == top_right.get_color() == bottom_left.get_color() == bottom_right.get_color() == TileColor.BLACK:
+                    if left.get_color() == right.get_color() == TileColor.WHITE:
+                        print("Strikethrough at white X centered at " + str(last_played) + "!")
+                    else:
+                        print(str(self.player2.name) + " wins!")
+                        exit(0)
+                else:
+                    if top_left.get_color() == TileColor.BLACK:
+                        self.win_condition(str(west) + str(north))
+                    elif top_right.get_color() == TileColor.BLACK:
+                        self.win_condition(str(east) + str(north))
+                    elif bottom_left.get_color() == TileColor.BLACK:
+                        self.win_condition(str(west) + str(south))
+                    elif bottom_right.get_color() == TileColor.BLACK:
+                        self.win_condition(str(east) + str(south))

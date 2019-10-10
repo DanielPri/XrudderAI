@@ -7,6 +7,9 @@ class Board:
         self.tiles = [[Tile() for _ in range(cols)] for _ in range(rows)]
         self.letterMap = dict(A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7, I=8, J=9, K=10, L=11)
 
+    def get_letter_map(self):
+        return self.letterMap
+
     def get_tile(self, row, col):
         return self.tiles[int(col) - 1][self.letterMap[row]]
 

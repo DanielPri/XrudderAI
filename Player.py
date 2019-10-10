@@ -8,13 +8,19 @@ class Player:
         self.name = name
         self.color = color
         self.played_pieces = []
+        self.last_played = None
+        self.finished = False
 
-    def play_turn(self):
+    def play_turn(self, moves):
         played = False
         token_selected = False
+        move_allowed = False
 
         if len(self.played_pieces) == 0:
             choice = 1
+        elif len(self.played_pieces) == 15:
+            print("You do not have any more tokens to place")
+            choice = 2
         else:
             choice = self.select_action()
 
@@ -26,8 +32,19 @@ class Player:
                     continue
                 if self.play_tile(tile):
                     self.played_pieces.append(position)
+                    self.last_played = position
                     played = True
+            return 0
         elif choice is 2:
+            print("Moves used: " + str(moves))
+            if moves < 30:
+                move_allowed = True
+            else:
+                print("No more moves allowed")
+                if len(self.played_pieces) == 15:
+                    print(str(self.name) + " has no turns left!")
+                    self.finished = True
+                return 0
             while not token_selected:
                 position = (input(self.name + " select a token on the board: ")).upper().replace(" ", "")
                 tile = self.select_tile(position)
@@ -41,16 +58,20 @@ class Player:
             while not played:
                 new_position = (input("Choose a location to move token at position [" + position + "]: ")).upper()\
                     .replace(" ", "")
-                new_tile = self.select_tile(new_position)
-                if new_tile is None:
+                if self.compare_coordinates(position, new_position):
+                    new_tile = self.select_tile(new_position)
+                else:
                     continue
 
                 if self.play_tile(new_tile):
                     tile.set_color(TileColor.BLANK)
                     self.played_pieces.remove(position)
                     self.played_pieces.append(new_position)
+                    self.last_played = new_position
                     played = True
-        self.board.draw()
+                    if move_allowed:
+                        return 1
+
 
     @staticmethod
     def select_action():
@@ -86,3 +107,22 @@ class Player:
         else:
             tile.set_color(self.color)
             return True
+
+    def compare_coordinates(self, position, new_position):
+        letter_map = self.board.get_letter_map()
+        if self.select_tile(new_position) is None:
+            return False
+        position_x = letter_map[position[0]]
+        position_y = int(position[1])
+        new_position_x = letter_map[new_position[0]]
+        new_position_y = int(new_position[1])
+        if position_x - 1 <= new_position_x <= position_x + 1:
+            if position_y - 1 <= new_position_y <= position_y + 1:
+                return True
+            else:
+                print("Cannot move more than one space in any direction")
+                return False
+        else:
+            print("Cannot move more than one space in any direction")
+            return False
+
