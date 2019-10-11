@@ -38,8 +38,8 @@ class Game:
             break
 
     def play(self):
-        m = 1
-        n = 1
+        player1_turn = 1
+        player2_turn = 1
         while True:
             if self.game_over:
                 break
@@ -53,14 +53,14 @@ class Game:
             if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
                 self.win_condition(self.player1.played_pieces)
                 self.win_condition(self.player2.played_pieces)
-            m += 1
+            player1_turn += 1
             self.board.draw()
             print(self.player2.name, 'Turn', n)
             self.moves += self.player2.play_turn(self.moves)
             if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
                 self.win_condition(self.player2.played_pieces)
                 self.win_condition(self.player1.played_pieces)
-            n += 1
+            player2_turn += 1
 
     def win_condition(self, played_pieces):
 
