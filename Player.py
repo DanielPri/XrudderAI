@@ -8,7 +8,6 @@ class Player:
         self.name = name
         self.color = color
         self.played_pieces = []
-        self.last_played = None
         self.finished = False
 
     def play_turn(self, moves):
@@ -22,6 +21,7 @@ class Player:
             print("You do not have any more tokens to place")
             choice = 2
         else:
+            print("Player", self.name, "Played Pieces", self.played_pieces)
             choice = self.select_action()
 
         if choice is 1:
