@@ -46,7 +46,7 @@ class Player:
                     self.finished = True
                 return 0
             while not token_selected:
-                position = (input(self.name + " select a token on the board: ")).upper().replace(" ", "")
+                position = (input('Player ' + self.name + " select a token on the board: ")).upper().replace(" ", "")
                 tile = self.select_tile(position)
                 if tile is None:
                     continue
@@ -82,7 +82,7 @@ class Player:
             try:
                 choice = int(input())
             except ValueError:
-                print("Please enter a number")
+                print("Incorrect input. Please enter a number")
                 continue
             if choice != 1 and choice != 2:
                 print("Please enter a valid number")
@@ -90,7 +90,7 @@ class Player:
             return choice
 
     def select_tile(self, position):
-        if position[0].isalpha() and position[1:].isdigit():
+        if position and (position[0].isalpha() and position[1:].isdigit()):
             if self.board.is_valid_position(position[0], position[1:]):
                 return self.board.get_tile(position[0], position[1:])
             else:

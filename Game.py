@@ -43,19 +43,21 @@ class Game:
         while True:
             if self.game_over:
                 break
+
             self.board.draw()
             if self.player1.finished and self.player2.finished:
                 print("Game finished in a draw!")
                 self.game_over = True
                 break
-            print(self.player1.name, 'Turn', m)
+            print("Player " + self.player1.name, 'Turn', player1_turn)
             self.moves += self.player1.play_turn(self.moves)
             if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
                 self.win_condition(self.player1.played_pieces)
                 self.win_condition(self.player2.played_pieces)
             player1_turn += 1
+
             self.board.draw()
-            print(self.player2.name, 'Turn', n)
+            print("Player " + self.player2.name, 'Turn', player2_turn)
             self.moves += self.player2.play_turn(self.moves)
             if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
                 self.win_condition(self.player2.played_pieces)
@@ -63,12 +65,11 @@ class Game:
             player2_turn += 1
 
     def win_condition(self, played_pieces):
-
         letter_map = self.board.get_letter_map()
         letter_array = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
 
         for i in range(len(played_pieces)):
-
+            # booleans track if current piece is on the edge of the board
             left_exists = False
             right_exists = False
             up_exists = False
@@ -76,10 +77,11 @@ class Game:
 
             iterated_piece = str(played_pieces[i])
 
+            # Checks edge cases
             if iterated_piece[0] is not "A":
                 left_exists = True
                 west = letter_array[(letter_map[iterated_piece[0]] - 1)]
-                if iterated_piece[1] is not "10":
+                if int(iterated_piece[1:]) is not 10:
                     up_exists = True
                     north = int(iterated_piece[1]) + 1
                     top_left = self.board.get_tile(west, north)
@@ -91,7 +93,7 @@ class Game:
             if iterated_piece[0] is not "L":
                 right_exists = True
                 east = letter_array[(letter_map[iterated_piece[0]] + 1)]
-                if iterated_piece[1] is not "10":
+                if int(iterated_piece[1:]) is not 10:
                     up_exists = True
                     north = int(iterated_piece[1]) + 1
                     top_right = self.board.get_tile(east, north)
