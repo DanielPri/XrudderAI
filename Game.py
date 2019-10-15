@@ -53,7 +53,10 @@ class Game:
             self.moves += self.player1.play_turn(self.moves)
             if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
                 self.win_condition(self.player1.played_pieces)
-                self.win_condition(self.player2.played_pieces)
+                if self.game_over:
+                    break
+                else:
+                    self.win_condition(self.player2.played_pieces)
             player1_turn += 1
 
             self.board.draw()
@@ -61,7 +64,10 @@ class Game:
             self.moves += self.player2.play_turn(self.moves)
             if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
                 self.win_condition(self.player2.played_pieces)
-                self.win_condition(self.player1.played_pieces)
+                if self.game_over:
+                    break
+                else:
+                    self.win_condition(self.player1.played_pieces)
             player2_turn += 1
 
     def win_condition(self, played_pieces):
