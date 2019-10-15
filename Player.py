@@ -13,13 +13,15 @@ class Player:
     def play_turn(self, moves):
         played = False
         token_selected = False
-        move_allowed = False
 
         if len(self.played_pieces) == 0:
             choice = 1
         elif len(self.played_pieces) == 15:
             print("You do not have any more tokens to place")
             choice = 2
+        elif moves == 30:
+            print("No more moves allowed")
+            choice = 1
         else:
             print("Player", self.name, "Played Pieces", self.played_pieces)
             choice = self.select_action()
@@ -40,7 +42,6 @@ class Player:
             if moves < 30:
                 move_allowed = True
             else:
-                print("No more moves allowed")
                 if len(self.played_pieces) == 15:
                     print(str(self.name) + " has no turns left!")
                     self.finished = True

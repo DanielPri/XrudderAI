@@ -1,9 +1,10 @@
 from TileColor import TileColor
 
-def setBoard(board, p1, p2):
-    board.get_tile("A", 1).set_color(TileColor.WHITE)
+
+def set_board(board, p1, p2):
+    board.get_tile("A", 5).set_color(TileColor.WHITE)
     board.get_tile("A", 3).set_color(TileColor.WHITE)
-    board.get_tile("B", 2).set_color(TileColor.WHITE)
+    board.get_tile("B", 4).set_color(TileColor.WHITE)
     board.get_tile("C", 1).set_color(TileColor.WHITE)
     board.get_tile("C", 3).set_color(TileColor.WHITE)
     board.get_tile("D", 5).set_color(TileColor.WHITE)
@@ -14,7 +15,7 @@ def setBoard(board, p1, p2):
     board.get_tile("K", 2).set_color(TileColor.WHITE)
     board.get_tile("L", 1).set_color(TileColor.WHITE)
 
-    p1.played_pieces = ["A1", "A3", "B2", "C1", "C3", "D5", "F5", "G5", "J1", "J3", "K2", "L1"]
+    p1.played_pieces = ["A5", "A3", "B4", "C1", "C3", "D5", "F5", "G5", "J1", "J3", "K2", "L1"]
 
     board.get_tile("A", 2).set_color(TileColor.BLACK)
     board.get_tile("C", 2).set_color(TileColor.BLACK)

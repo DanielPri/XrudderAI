@@ -3,8 +3,8 @@ from TileColor import TileColor
 from Player import Player
 from DebugMode import *
 
-class Game:
 
+class Game:
 
     def __init__(self):
         self.board = Board()
@@ -41,7 +41,7 @@ class Game:
                 print("-----------------------------WELCOME TO DEBUG MODE----------------------------------------")
                 print("------------------------------------------------------------------------------------------")
                 self.moves = 28
-                setBoard(self.board, self.player1, self.player2)
+                set_board(self.board, self.player1, self.player2)
 
             break
 
