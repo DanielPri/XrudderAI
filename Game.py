@@ -1,16 +1,17 @@
 from Board import Board
 from TileColor import TileColor
 from Player import Player
-
+from DebugMode import *
 
 class Game:
+
 
     def __init__(self):
         self.board = Board()
         self.player1 = None
         self.player2 = None
-        self.select_players()
         self.moves = 0
+        self.select_players()
         self.game_over = False
         self.play()
 
@@ -22,7 +23,7 @@ class Game:
                 print("Please Enter a valid number")
                 continue
 
-            if num_of_players != 1 and num_of_players != 2:
+            if num_of_players != 1 and num_of_players != 2 and num_of_players != 42:
                 continue
 
             name = input("Please enter the name of player 1: ")
@@ -34,6 +35,13 @@ class Game:
                 name = "CPU"
 
             self.player2 = Player(self.board, name, TileColor.BLACK)
+
+            if num_of_players is 42:
+                print("\n\n\n\n\n")
+                print("-----------------------------WELCOME TO DEBUG MODE----------------------------------------")
+                print("------------------------------------------------------------------------------------------")
+                self.moves = 28
+                setBoard(self.board, self.player1, self.player2)
 
             break
 
