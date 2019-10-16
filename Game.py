@@ -58,24 +58,30 @@ class Game:
                 self.game_over = True
                 break
             print("Player " + self.player1.name, 'Turn', player1_turn)
+            current_moves = self.moves
             self.moves += self.player1.play_turn(self.moves)
             if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
                 self.win_condition(self.player1.played_pieces)
                 if self.game_over:
                     break
-                else:
+                elif not current_moves == self.moves:
                     self.win_condition(self.player2.played_pieces)
+                    if self.game_over:
+                        break
             player1_turn += 1
 
             self.board.draw()
             print("Player " + self.player2.name, 'Turn', player2_turn)
+            current_moves = self.moves
             self.moves += self.player2.play_turn(self.moves)
             if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
                 self.win_condition(self.player2.played_pieces)
                 if self.game_over:
                     break
-                else:
+                elif not current_moves == self.moves:
                     self.win_condition(self.player1.played_pieces)
+                    if self.game_over:
+                        break
             player2_turn += 1
 
     def win_condition(self, played_pieces):
