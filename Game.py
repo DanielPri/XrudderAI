@@ -58,11 +58,11 @@ class Game:
             current_moves = self.moves
             self.moves += self.player1.play_turn(self.moves)
             if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
-                self.win_condition(self.player1.name, self.player1.played_pieces, TileColor.WHITE, TileColor.BLACK)
+                self.win_condition(self.player1.name, self.player1.played_pieces, self.player1.color, self.player2.color)
                 if self.game_over:
                     break
                 elif not current_moves == self.moves:
-                    self.win_condition(self.player2.name, self.player2.played_pieces, TileColor.BLACK, TileColor.WHITE)
+                    self.win_condition(self.player2.name, self.player2.played_pieces, self.player2.color, self.player1.color)
                     if self.game_over:
                         break
             player1_turn += 1
@@ -72,11 +72,11 @@ class Game:
             current_moves = self.moves
             self.moves += self.player2.play_turn(self.moves)
             if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
-                self.win_condition(self.player2.name, self.player2.played_pieces, TileColor.BLACK, TileColor.WHITE)
+                self.win_condition(self.player2.name, self.player2.played_pieces, self.player2.color, self.player1.color)
                 if self.game_over:
                     break
                 elif not current_moves == self.moves:
-                    self.win_condition(self.player1.name, self.player1.played_pieces, TileColor.WHITE, TileColor.BLACK)
+                    self.win_condition(self.player1.name, self.player1.played_pieces, self.player1.color, self.player2.color)
                     if self.game_over:
                         break
             player2_turn += 1
