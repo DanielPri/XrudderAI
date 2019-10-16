@@ -49,9 +49,6 @@ class Game:
         player1_turn = 1
         player2_turn = 1
         while True:
-            if self.game_over:
-                break
-
             self.board.draw()
             if self.player1.finished and self.player2.finished:
                 print("Game finished in a draw!")
@@ -61,11 +58,11 @@ class Game:
             current_moves = self.moves
             self.moves += self.player1.play_turn(self.moves)
             if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
-                self.win_condition(self.player1.played_pieces)
+                self.win_condition(self.player1.name, self.player1.played_pieces, TileColor.WHITE, TileColor.BLACK)
                 if self.game_over:
                     break
                 elif not current_moves == self.moves:
-                    self.win_condition(self.player2.played_pieces)
+                    self.win_condition(self.player2.name, self.player2.played_pieces, TileColor.BLACK, TileColor.WHITE)
                     if self.game_over:
                         break
             player1_turn += 1
@@ -75,16 +72,16 @@ class Game:
             current_moves = self.moves
             self.moves += self.player2.play_turn(self.moves)
             if len(self.player1.played_pieces) >= 5 or len(self.player2.played_pieces) >= 5:
-                self.win_condition(self.player2.played_pieces)
+                self.win_condition(self.player2.name, self.player2.played_pieces, TileColor.BLACK, TileColor.WHITE)
                 if self.game_over:
                     break
                 elif not current_moves == self.moves:
-                    self.win_condition(self.player1.played_pieces)
+                    self.win_condition(self.player1.name, self.player1.played_pieces, TileColor.WHITE, TileColor.BLACK)
                     if self.game_over:
                         break
             player2_turn += 1
 
-    def win_condition(self, played_pieces):
+    def win_condition(self, name, played_pieces, player_color, opponent_color):
         letter_map = self.board.get_letter_map()
         letter_array = []
 
@@ -127,19 +124,11 @@ class Game:
                 right = self.board.get_tile(east, int(iterated_piece[1]))
 
             if left_exists and right_exists and up_exists and down_exists:
-                if top_left.get_color() == top_right.get_color() == bottom_left.get_color() == bottom_right.get_color() == TileColor.WHITE:
-                    if left.get_color() == right.get_color() == TileColor.BLACK:
-                        print("Strikethrough at white X centered at " + str(iterated_piece) + "!")
+                if top_left.get_color() == top_right.get_color() == bottom_left.get_color() == bottom_right.get_color() == player_color:
+                    if left.get_color() == right.get_color() == opponent_color:
+                        print("Strikethrough at " + str(player_color)[10:15] + " X centered at " + str(iterated_piece) + "!")
                     else:
                         self.board.draw()
-                        print("Player " + str(self.player1.name) + " wins!")
-                        self.game_over = True
-                        break
-                elif top_left.get_color() == top_right.get_color() == bottom_left.get_color() == bottom_right.get_color() == TileColor.BLACK:
-                    if left.get_color() == right.get_color() == TileColor.WHITE:
-                        print("Strikethrough at black X centered at " + str(iterated_piece) + "!")
-                    else:
-                        self.board.draw()
-                        print("Player " + str(self.player2.name) + " wins!")
+                        print("Player " + name + " wins!")
                         self.game_over = True
                         break
