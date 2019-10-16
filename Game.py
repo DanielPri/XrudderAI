@@ -80,7 +80,10 @@ class Game:
 
     def win_condition(self, played_pieces):
         letter_map = self.board.get_letter_map()
-        letter_array = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
+        letter_array = []
+
+        for key in letter_map.keys():
+            letter_array.append(key)
 
         for i in range(len(played_pieces)):
             # booleans track if current piece is on the edge of the board
@@ -122,13 +125,15 @@ class Game:
                     if left.get_color() == right.get_color() == TileColor.BLACK:
                         print("Strikethrough at white X centered at " + str(iterated_piece) + "!")
                     else:
-                        print(str(self.player1.name) + " wins!")
+                        self.board.draw()
+                        print("Player " + str(self.player1.name) + " wins!")
                         self.game_over = True
                         break
                 elif top_left.get_color() == top_right.get_color() == bottom_left.get_color() == bottom_right.get_color() == TileColor.BLACK:
                     if left.get_color() == right.get_color() == TileColor.WHITE:
                         print("Strikethrough at black X centered at " + str(iterated_piece) + "!")
                     else:
-                        print(str(self.player2.name) + " wins!")
+                        self.board.draw()
+                        print("Player " + str(self.player2.name) + " wins!")
                         self.game_over = True
                         break

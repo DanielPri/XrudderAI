@@ -8,6 +8,8 @@ class Player:
         self.name = name
         self.color = color
         self.played_pieces = []
+        self.max_tokens = 15
+        self.max_moves = 30
         self.finished = False
 
     def play_turn(self, moves):
@@ -16,10 +18,10 @@ class Player:
 
         if len(self.played_pieces) == 0:
             choice = 1
-        elif len(self.played_pieces) == 15:
+        elif len(self.played_pieces) == self.max_tokens:
             print("You do not have any more tokens to place")
             choice = 2
-        elif moves == 30:
+        elif moves == self.max_moves:
             print("No more moves allowed")
             choice = 1
         else:
@@ -34,15 +36,14 @@ class Player:
                     continue
                 if self.play_tile(tile):
                     self.played_pieces.append(position)
-                    self.last_played = position
                     played = True
             return 0
         elif choice is 2:
             print("Moves used: " + str(moves))
-            if moves < 30:
+            if moves < self.max_moves:
                 move_allowed = True
             else:
-                if len(self.played_pieces) == 15:
+                if len(self.played_pieces) == self.max_tokens:
                     print(str(self.name) + " has no turns left!")
                     self.finished = True
                 return 0
@@ -68,7 +69,6 @@ class Player:
                     tile.set_color(TileColor.BLANK)
                     self.played_pieces.remove(position)
                     self.played_pieces.append(new_position)
-                    self.last_played = new_position
                     played = True
                     if move_allowed:
                         return 1
