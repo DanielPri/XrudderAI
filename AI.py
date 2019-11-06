@@ -5,32 +5,39 @@ class AI:
     def __init__(self, color):
         self.color = color
         self.placed_tokens = []
+        # heuristic NODE with both a numerical value, and a decision type (move, place or none)
         self.current_heuristic_value = None
         self.inverse_letter_map = None
         self.invert_letter_map()
     # ------------------------------------------------README--------------------------------------------------------
     # how this AI will work:
-    # Decide next move creates a board with a token in A,1 tile
+    # Decide next move creates a board with a token in first unoccupied tile
+    # it will do it for whoever's turn it is, and will do a MIN or MAX accordingly
     # it runs heuristic_for_board on that board
-    # it remembers the heuristic value for that move
-    # it then makes a board with a token in A,2 and so on goes through the same steps until all tiles get a value
+    # it remembers the heuristic value for that board in current_heuristic_value
+    # it loops: makes a board with a token in the second unoccupied tile
+    # goes through the same steps, replacing previous current_heuristic_value if better are found
     # it then does that again by iterating through all its placed tokens (if there are any)
     #   and try all the possible moves for those tokens and see their heuristic values
+    #   (remember, moves are different from placing)
+    # at the end, the current_heuristic_value with the best value will be the one used to create the move
 
     # Using the info from the current state of the board and whose turn it is, decide the next optimal move
-    def decide_next_move(self, currentBoard, colorTurn):
+    def decide_next_move(self, current_board, color_turn):
         # based on whose turn it is, apply either a MIN or a MAX logic
-        if colorTurn is self.color:
+        if color_turn is self.color:
             # root is max
             print("in max root")
         else:
             # root is min
             print("in min root")
+            # hardcoded to G6 for now
+        return "G6"
 
-    def heuristic_for_board(self, boardScenario):
+    def heuristic_for_board(self, board_scenario):
         # this function will evaluate the heuristic for a given game state
         print("evaluating Heuristic")
-        self.board_loop(boardScenario, self.heuristic_for_tile)
+        self.board_loop(board_scenario, self.heuristic_for_tile)
 
     def heuristic_for_tile(self, tile, i, j):
         print("evaluating tile at" + self.inverse_letter_map[i] + j)
