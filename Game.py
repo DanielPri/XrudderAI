@@ -1,5 +1,4 @@
 from Board import Board
-from TileColor import TileColor
 from Player import Player
 from DebugMode import *
 
