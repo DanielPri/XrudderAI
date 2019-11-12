@@ -67,7 +67,7 @@ class AI(Player):
                     else:
                         new_board = self.play_imaginary_turn_placing(board, letter, number, self.opponent_color)
                         current_value = self.mini_max(new_board, depth + 1, False)
-                        if current_value > best_value:
+                        if current_value < best_value:
                             best_value = current_value
                             self.best_moves.clear()
                             self.best_moves.append(letter + str(number))
