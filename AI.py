@@ -65,8 +65,8 @@ class AI(Player):
                         # check the possible position to move the tile_token
                         self.check_moving_heuristic(letter, number, board, depth, best_value)
                     else:
-                        new_board = self.play_imaginary_turn_placing(board, letter, number, self.opponent_color)
-                        current_value = self.mini_max(new_board, depth + 1, False)
+                        new_board = self.play_imaginary_turn_placing(board, letter, number, self.color)
+                        current_value = self.mini_max(new_board, depth + 1, True)
                         if current_value < best_value:
                             best_value = current_value
                             self.best_moves.clear()
