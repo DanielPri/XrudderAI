@@ -14,7 +14,8 @@ class Board:
         return self.tiles[int(col) - 1][self.letterMap[row]]
 
     def draw(self):
-        print('\033[4m')
+        print('\033[4m', end='')
+        print('                                                    ')
         for i in range(len(self.tiles)):
             if i == 0:
                 print(10 - i, end='| ')
@@ -24,7 +25,7 @@ class Board:
             for j in range(len(self.tiles[0])):
                 print(self.tiles[9 - i][j].get_color().value + ' | ', end='')
             print('')
-        print('\033[0m    A   B   C   D   E   F   G   H   I   J   K   L')
+        print('\033[0m\n    A   B   C   D   E   F   G   H   I   J   K   L')
 
     def is_valid_position(self, row, col):
         return row in self.letterMap and 0 < int(col) <= 10
