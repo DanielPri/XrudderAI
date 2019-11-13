@@ -1,6 +1,6 @@
 from Board import Board
-from TileColor import TileColor
 from Player import Player
+from AI import AI
 from DebugMode import *
 
 
@@ -11,9 +11,9 @@ class Game:
         self.player1 = None
         self.player2 = None
         self.moves = 0
-        self.select_players()
         self.game_over = False
-        self.play()
+        self.AI = None
+        self.select_players()
 
     def select_players(self):
         while 1 is 1:
@@ -31,10 +31,12 @@ class Game:
 
             if num_of_players is 2:
                 name = input("Please enter the name of player 2: ")
+                self.player2 = Player(self.board, name, TileColor.BLACK)
+                self.play()
             else:
                 name = "CPU"
-
-            self.player2 = Player(self.board, name, TileColor.BLACK)
+                self.AI = AI(self.board, name, TileColor.BLACK, TileColor.WHITE)
+                self.play_with_ai()
 
             if num_of_players is 42:
                 print("\n\n\n\n\n")
@@ -42,6 +44,7 @@ class Game:
                 print("------------------------------------------------------------------------------------------")
                 self.moves = 28
                 set_board(self.board, self.player1, self.player2)
+                self.play()
 
             break
 
@@ -80,6 +83,42 @@ class Game:
                     if self.game_over:
                         break
             player2_turn += 1
+
+    def play_with_ai(self):
+        player1_turn = 1
+        ai_turn = 1
+        while True:
+            self.board.draw()
+            if self.player1.finished and self.AI.finished:
+                print("Game finished in a draw!")
+                self.game_over = True
+                break
+            print("Player " + self.player1.name, 'Turn', player1_turn)
+            current_moves = self.moves
+            self.moves += self.player1.play_turn(self.moves)
+            if len(self.player1.played_pieces) >= 5 or len(self.AI.played_pieces) >= 5:
+                self.win_condition(self.player1.name, self.player1.played_pieces, self.player1.color, self.AI.color)
+                if self.game_over:
+                    break
+                elif not current_moves == self.moves:
+                    self.win_condition(self.AI.name, self.AI.played_pieces, self.AI.color, self.player1.color)
+                    if self.game_over:
+                        break
+            player1_turn += 1
+
+            self.board.draw()
+            print("Player " + self.AI.name, 'Turn', ai_turn)
+            current_moves = self.moves
+            self.moves += self.AI.play_turn(self.moves)
+            if len(self.player1.played_pieces) >= 5 or len(self.AI.played_pieces) >= 5:
+                self.win_condition(self.AI.name, self.AI.played_pieces, self.AI.color, self.player1.color)
+                if self.game_over:
+                    break
+                elif not current_moves == self.moves:
+                    self.win_condition(self.player1.name, self.player1.played_pieces, self.player1.color, self.AI.color)
+                    if self.game_over:
+                        break
+            ai_turn += 1
 
     def win_condition(self, name, played_pieces, player_color, opponent_color):
         letter_map = self.board.get_letter_map()
