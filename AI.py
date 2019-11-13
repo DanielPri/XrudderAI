@@ -26,10 +26,14 @@ class AI(Player):
     # at the end, the current_heuristic_value with the best value will be the one used to create the move
 
     def play_turn(self, moves):
+        if len(self.played_pieces) != 0:
+            print("Player", self.name, "Played Pieces", self.played_pieces)
         self.best_moves = []  # reset the best moves
         imaginary_board = copy.deepcopy(self.board)
         self.mini_max(imaginary_board, 1, False)
+        print("Best moves for AI: " + str(self.best_moves))
         position = random.choice(self.best_moves)
+        print("Proceeding to place or move a tile to " + str(position))
         self.play_tile(self.select_tile(position))
         self.played_pieces.append(position)
         return 0

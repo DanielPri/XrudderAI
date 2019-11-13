@@ -2,6 +2,7 @@ from Board import Board
 from Player import Player
 from AI import AI
 from DebugMode import *
+import time
 
 
 class Game:
@@ -29,22 +30,24 @@ class Game:
             name = input("Please enter the name of player 1: ")
             self.player1 = Player(self.board, name, TileColor.WHITE)
 
-            if num_of_players is 2:
-                name = input("Please enter the name of player 2: ")
-                self.player2 = Player(self.board, name, TileColor.BLACK)
-                self.play()
-            else:
-                name = "CPU"
-                self.AI = AI(self.board, name, TileColor.BLACK, TileColor.WHITE)
-                self.play_with_ai()
-
             if num_of_players is 42:
                 print("\n\n\n\n\n")
                 print("-----------------------------WELCOME TO DEBUG MODE----------------------------------------")
                 print("------------------------------------------------------------------------------------------")
                 self.moves = 28
+                self.player2 = Player(self.board, "2", TileColor.BLACK)
                 set_board(self.board, self.player1, self.player2)
                 self.play()
+                break
+
+            if num_of_players is 2:
+                name = input("Please enter the name of player 2: ")
+                self.player2 = Player(self.board, name, TileColor.BLACK)
+                self.play()
+            else:
+                name = "AI"
+                self.AI = AI(self.board, name, TileColor.BLACK, TileColor.WHITE)
+                self.play_with_ai()
 
             break
 
@@ -109,7 +112,9 @@ class Game:
             self.board.draw()
             print("Player " + self.AI.name, 'Turn', ai_turn)
             current_moves = self.moves
+            ai_turn_start = time.perf_counter()
             self.moves += self.AI.play_turn(self.moves)
+            print("AI turn took " + str(time.perf_counter() - ai_turn_start) + " seconds")
             if len(self.player1.played_pieces) >= 5 or len(self.AI.played_pieces) >= 5:
                 self.win_condition(self.AI.name, self.AI.played_pieces, self.AI.color, self.player1.color)
                 if self.game_over:
