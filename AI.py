@@ -1,7 +1,7 @@
 from Board import Board
 from Player import Player
 from TileColor import TileColor
-import copy
+import copyg
 import random
 
 
@@ -10,7 +10,7 @@ class AI(Player):
     def __init__(self, board, name, color, opponent_color):
         super().__init__(board, name, color)
         self.opponent_color = opponent_color
-        self.max_depth = 2
+        self.max_depth = 3
         self.best_moves = []
     # ------------------------------------------------README--------------------------------------------------------
     # how this AI will work:
