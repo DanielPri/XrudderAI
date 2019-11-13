@@ -35,8 +35,8 @@ class AI(Player):
         return 0
 
     def mini_max(self, board, depth, is_maximizing_player):
-        print('~~~~~~~~~~~~~~~~ imaginary board ~~~~~~~~~~~~~~~~ ')
-        board.draw()
+        #print('~~~~~~~~~~~~~~~~ imaginary board ~~~~~~~~~~~~~~~~ ')
+        #board.draw()
         if depth is self.max_depth:
             return self.get_board_heuristic(board)
 
@@ -302,5 +302,5 @@ class AI(Player):
                         total_heuristic += current_heuristic
                     else:
                         total_heuristic -= current_heuristic
-        print('heuristic value' + str(total_heuristic))
+        # print('heuristic value = ' + str(total_heuristic))
         return total_heuristic
