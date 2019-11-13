@@ -1,7 +1,7 @@
 from Board import Board
 from Player import Player
 from TileColor import TileColor
-import copyg
+import copy
 import random
 
 
