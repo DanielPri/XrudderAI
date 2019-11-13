@@ -10,7 +10,7 @@ class AI(Player):
     def __init__(self, board, name, color, opponent_color):
         super().__init__(board, name, color)
         self.opponent_color = opponent_color
-        self.max_depth = 3
+        self.max_depth = 2
         self.best_moves = []
     # ------------------------------------------------README--------------------------------------------------------
     # how this AI will work:
@@ -48,7 +48,7 @@ class AI(Player):
                             and self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == self.opponent_color:
                         # check the possible position to move the tile_token
                         self.check_max_moving_heuristic(letter, number, board, depth, best_value)
-                    else:
+                    elif self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == TileColor.BLANK:
                         new_board = self.play_imaginary_turn_placing(board, letter, number, self.opponent_color)
                         current_value = self.mini_max(new_board, depth + 1, False)
                         if current_value > best_value:
@@ -57,6 +57,8 @@ class AI(Player):
                             self.best_moves.append(letter + str(number))
                         elif current_value == best_value:
                             self.best_moves.append(letter + str(number))
+                    else:
+                        continue
             return best_value
         else:
             best_value = 500000000000000000
@@ -66,7 +68,7 @@ class AI(Player):
                             and self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == self.color:
                         # check the possible position to move the tile_token
                         self.check_min_moving_heuristic(letter, number, board, depth, best_value)
-                    else:
+                    elif self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == TileColor.BLANK:
                         new_board = self.play_imaginary_turn_placing(board, letter, number, self.color)
                         current_value = self.mini_max(new_board, depth + 1, True)
                         if current_value < best_value:
@@ -75,6 +77,8 @@ class AI(Player):
                             self.best_moves.append(letter + str(number))
                         elif current_value == best_value:
                             self.best_moves.append(letter + str(number))
+                    else:
+                        continue
             return best_value
 
     def check_max_moving_heuristic(self, letter, number, board, depth, best_value):
