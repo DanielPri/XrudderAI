@@ -10,7 +10,7 @@ class AI(Player):
     def __init__(self, board, name, color, opponent_color):
         super().__init__(board, name, color)
         self.opponent_color = opponent_color
-        self.max_depth = 2
+        self.max_depth = 3
         self.best_moves = []
     # ------------------------------------------------README--------------------------------------------------------
     # how this AI will work:
@@ -281,6 +281,7 @@ class AI(Player):
                 if board.get_tile(letter, number).get_color() is not TileColor.BLANK:
                     current_color = board.get_tile(letter, number).get_color()
                     current_heuristic = 0
+                    blocked = False
 
                     if board.is_valid_position((chr(ord(letter) - 1)), number - 1):  # try the bottom left
                         if board.get_tile((chr(ord(letter) - 1)), number - 1).get_color() == current_color:
@@ -297,6 +298,16 @@ class AI(Player):
                     if board.is_valid_position((chr(ord(letter) + 1)), number + 1):  # try top right
                         if board.get_tile((chr(ord(letter) + 1)), number + 1).get_color() == current_color:
                             current_heuristic += 1
+
+                    # check block condition
+                    if board.is_valid_position((chr(ord(letter) + 1)), number):  # try right
+                        if board.get_tile((chr(ord(letter) + 1)), number).get_color() != current_color:
+                            if board.is_valid_position((chr(ord(letter) - 1)), number):  # try left
+                                if board.get_tile((chr(ord(letter) - 1)), number).get_color() != current_color:
+                                    blocked = True
+
+                    if current_heuristic == 4 and not blocked:
+                        current_heuristic += 1000
 
                     if current_color is self.opponent_color:
                         total_heuristic += current_heuristic
