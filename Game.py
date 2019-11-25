@@ -35,9 +35,13 @@ class Game:
                 print("-----------------------------WELCOME TO DEBUG MODE----------------------------------------")
                 print("------------------------------------------------------------------------------------------")
                 self.moves = 28
-                self.player2 = Player(self.board, "2", TileColor.BLACK)
-                set_board(self.board, self.player1, self.player2)
-                self.play()
+                # self.player2 = Player(self.board, "2", TileColor.BLACK)
+                # set_board(self.board, self.player1, self.player2)
+                # self.play()
+                name = "AI"
+                self.AI = AI(self.board, name, TileColor.BLACK, TileColor.WHITE)
+                set_board(self.board, self.player1, self.AI)
+                self.play_with_ai()
                 break
 
             if num_of_players is 2:
