@@ -33,9 +33,9 @@ class AI(Player):
         self.best_moves = []  # reset the best moves
         imaginary_board = copy.deepcopy(self.board)
         if coin_toss == 2:  # AI goes second
-            self.mini_max(imaginary_board, 1, False)
+            self.mini_max(imaginary_board, 1, False, -500000000000000000, 500000000000000000)
         else:  # AI goes first
-            self.mini_max(imaginary_board, 1, True)
+            self.mini_max(imaginary_board, 1, True, -500000000000000000, 500000000000000000)
         print("Best moves for AI: " + str(self.best_moves))
         while not played:
             if not self.best_moves:
@@ -86,7 +86,7 @@ class AI(Player):
                 # played = True
                 return 0
 
-    def mini_max(self, board, depth, is_maximizing_player):
+    def mini_max(self, board, depth, is_maximizing_player, alpha, beta):
         # print('~~~~~~~~~~~~~~~~ imaginary board ~~~~~~~~~~~~~~~~ ')
         # board.draw()
         if depth is self.max_depth:
@@ -99,11 +99,11 @@ class AI(Player):
                     if self.select_tile_on_imaginary_board(letter + str(number), board).get_color() != TileColor.BLANK \
                             and self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == self.opponent_color:
                         # check the possible position to move the tile_token
-                        self.check_max_moving_heuristic(letter, number, board, depth, best_value)
+                        self.check_max_moving_heuristic(letter, number, board, depth, best_value, alpha, beta)
                     elif self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == TileColor.BLANK \
                             and len(self.played_pieces) != self.max_tokens:  # place tokens only if it didn't play all tokens
                         new_board = self.play_imaginary_turn_placing(board, letter, number, self.opponent_color)
-                        current_value = self.mini_max(new_board, depth + 1, False)
+                        current_value = self.mini_max(new_board, depth + 1, False, alpha, beta)
                         if current_value > best_value:
                             # print("place " + letter + str(number))
                             # print("Current value: " + str(current_value))
@@ -114,6 +114,9 @@ class AI(Player):
                             self.best_moves.append(letter + str(number))
                     else:
                         continue
+                    alpha = max(alpha, best_value)
+                    if beta <= alpha:
+                        break
             return best_value
         else:
             best_value = 500000000000000000
@@ -122,11 +125,11 @@ class AI(Player):
                     if self.select_tile_on_imaginary_board(letter + str(number), board).get_color() != TileColor.BLANK \
                             and self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == self.color:
                         # check the possible position to move the tile_token
-                        self.check_min_moving_heuristic(letter, number, board, depth,best_value)
+                        self.check_min_moving_heuristic(letter, number, board, depth, best_value, alpha, beta)
                     elif self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == TileColor.BLANK \
                             and len(self.played_pieces) != self.max_tokens:  # place tokens only if it didn't play all tokens
                         new_board = self.play_imaginary_turn_placing(board, letter, number, self.color)
-                        current_value = self.mini_max(new_board, depth + 1, True)
+                        current_value = self.mini_max(new_board, depth + 1, True, alpha, beta)
                         if current_value < best_value:
                             # print("place " + letter + str(number))
                             # print("Current value: " + str(current_value))
@@ -137,16 +140,19 @@ class AI(Player):
                             self.best_moves.append(letter + str(number))
                     else:
                         continue
+                    beta = min(beta, best_value)
+                    if beta <= alpha:
+                        break
             return best_value
 
-    def check_max_moving_heuristic(self, letter, number, board, depth, best_value):
+    def check_max_moving_heuristic(self, letter, number, board, depth, best_value, alpha, beta):
         original_tile = letter + str(number)
         if original_tile in self.played_pieces:  # only consider moving if tile is in played pieces
             # top_left
             if board.is_valid_position((chr(ord(letter) - 1)), number + 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) - 1) + str(number + 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) - 1), number + 1, self.opponent_color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, False)
+                    current_value = self.mini_max(new_board, depth + 1, False, alpha, beta)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) - 1) + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -155,11 +161,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + chr(ord(letter) - 1) + str(number + 1))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + chr(ord(letter) - 1) + str(number + 1))
+                    alpha = max(alpha, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # left
             if board.is_valid_position((chr(ord(letter) - 1)), number):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) - 1) + str(number), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) - 1), number, self.opponent_color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, False)
+                    current_value = self.mini_max(new_board, depth + 1, False, alpha, beta)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) - 1) + str(number))
                         #print("Current value: " + str(current_value))
@@ -168,11 +177,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + chr(ord(letter) - 1) + str(number))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + chr(ord(letter) - 1) + str(number))
+                    alpha = max(alpha, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # bottom_left
             if board.is_valid_position((chr(ord(letter) - 1)), number - 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) - 1) + str(number - 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) - 1), number - 1, self.opponent_color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, False)
+                    current_value = self.mini_max(new_board, depth + 1, False, alpha, beta)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) - 1) + str(number - 1))
                         #print("Current value: " + str(current_value))
@@ -181,11 +193,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + chr(ord(letter) - 1) + str(number - 1))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + chr(ord(letter) - 1) + str(number - 1))
+                    alpha = max(alpha, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # bottom
             if board.is_valid_position(letter, number - 1):
                 if self.select_tile_on_imaginary_board(letter + str(number - 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, letter, number - 1, self.opponent_color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, False)
+                    current_value = self.mini_max(new_board, depth + 1, False, alpha, beta)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + letter + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -194,11 +209,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + letter + str(number - 1))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + letter + str(number - 1))
+                    alpha = max(alpha, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # bottom_right
             if board.is_valid_position((chr(ord(letter) + 1)), number - 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) + 1) + str(number - 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) + 1), number - 1, self.opponent_color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, False)
+                    current_value = self.mini_max(new_board, depth + 1, False, alpha, beta)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) + 1) + str(number - 1))
                         #print("Current value: " + str(current_value))
@@ -207,11 +225,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + chr(ord(letter) + 1) + str(number - 1))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + chr(ord(letter) + 1) + str(number - 1))
+                    alpha = max(alpha, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # right
             if board.is_valid_position((chr(ord(letter) + 1)), number):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) + 1) + str(number), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) + 1), number, self.opponent_color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, False)
+                    current_value = self.mini_max(new_board, depth + 1, False, alpha, beta)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) + 1) + str(number))
                         #print("Current value: " + str(current_value))
@@ -220,11 +241,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + chr(ord(letter) + 1) + str(number))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + chr(ord(letter) + 1) + str(number))
+                    alpha = max(alpha, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # top right
             if board.is_valid_position((chr(ord(letter) + 1)), number + 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) + 1) + str(number + 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) + 1), number + 1, self.opponent_color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, False)
+                    current_value = self.mini_max(new_board, depth + 1, False, alpha, beta)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) + 1) + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -233,11 +257,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + chr(ord(letter) + 1) + str(number + 1))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + chr(ord(letter) + 1) + str(number + 1))
+                    alpha = max(alpha, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # top
             if board.is_valid_position(letter, number + 1):
                 if self.select_tile_on_imaginary_board(letter + str(number + 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, letter, number + 1, self.opponent_color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, False)
+                    current_value = self.mini_max(new_board, depth + 1, False, alpha, beta)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + letter + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -246,16 +273,19 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + letter + str(number + 1))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + letter + str(number + 1))
+                    alpha = max(alpha, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
         return best_value and self.best_moves
 
-    def check_min_moving_heuristic(self, letter, number, board, depth, best_value):
+    def check_min_moving_heuristic(self, letter, number, board, depth, best_value, alpha, beta):
         original_tile = letter + str(number)
         if original_tile in self.played_pieces:  # only consider moving if tile is in played pieces
             # top_left
             if board.is_valid_position((chr(ord(letter) - 1)), number + 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) - 1) + str(number + 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) - 1), number + 1, self.color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, True)
+                    current_value = self.mini_max(new_board, depth + 1, True, alpha, beta)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) - 1) + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -264,11 +294,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + chr(ord(letter) - 1) + str(number + 1))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + chr(ord(letter) - 1) + str(number + 1))
+                    beta = min(beta, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # left
             if board.is_valid_position((chr(ord(letter) - 1)), number):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) - 1) + str(number), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) - 1), number, self.color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, True)
+                    current_value = self.mini_max(new_board, depth + 1, True, alpha, beta)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) - 1) + str(number))
                         #print("Current value: " + str(current_value))
@@ -277,11 +310,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + chr(ord(letter) - 1) + str(number))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + chr(ord(letter) - 1) + str(number))
+                    beta = min(beta, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # bottom_left
             if board.is_valid_position((chr(ord(letter) - 1)), number - 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) - 1) + str(number - 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) - 1), number - 1, self.color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, True)
+                    current_value = self.mini_max(new_board, depth + 1, True, alpha, beta)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) - 1) + str(number - 1))
                         #print("Current value: " + str(current_value))
@@ -290,11 +326,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + chr(ord(letter) - 1) + str(number - 1))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " +chr(ord(letter) - 1) + str(number - 1))
+                    beta = min(beta, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # bottom
             if board.is_valid_position(letter, number - 1):
                 if self.select_tile_on_imaginary_board(letter + str(number - 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, letter, number - 1, self.color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, True)
+                    current_value = self.mini_max(new_board, depth + 1, True, alpha, beta)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + letter + str(number - 1))
                         #print("Current value: " + str(current_value))
@@ -303,11 +342,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + letter + str(number - 1))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + letter + str(number - 1))
+                    beta = min(beta, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # bottom_right
             if board.is_valid_position((chr(ord(letter) + 1)), number - 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) + 1) + str(number - 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) + 1), number - 1, self.color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, True)
+                    current_value = self.mini_max(new_board, depth + 1, True, alpha, beta)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) + 1) + str(number - 1))
                         #print("Current value: " + str(current_value))
@@ -316,11 +358,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + chr(ord(letter) + 1) + str(number - 1))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + chr(ord(letter) + 1) + str(number - 1))
+                    beta = min(beta, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # right
             if board.is_valid_position((chr(ord(letter) + 1)), number):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) + 1) + str(number), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) + 1), number, self.color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, True)
+                    current_value = self.mini_max(new_board, depth + 1, True, alpha, beta)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) + 1) + str(number))
                         #print("Current value: " + str(current_value))
@@ -329,11 +374,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + chr(ord(letter) + 1) + str(number))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + chr(ord(letter) + 1) + str(number))
+                    beta = min(beta, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # top right
             if board.is_valid_position((chr(ord(letter) + 1)), number + 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) + 1) + str(number + 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) + 1), number + 1, self.color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, True)
+                    current_value = self.mini_max(new_board, depth + 1, True, alpha, beta)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) + 1) + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -342,11 +390,14 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + chr(ord(letter) + 1) + str(number + 1))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + chr(ord(letter) + 1) + str(number + 1))
+                    beta = min(beta, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
             # top
             if board.is_valid_position(letter, number + 1):
                 if self.select_tile_on_imaginary_board(letter + str(number + 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, letter, number + 1, self.color, original_tile)
-                    current_value = self.mini_max(new_board, depth + 1, True)
+                    current_value = self.mini_max(new_board, depth + 1, True, alpha, beta)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + letter + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -355,6 +406,9 @@ class AI(Player):
                         self.best_moves.append(original_tile + " " + letter + str(number + 1))
                     elif current_value == best_value:
                         self.best_moves.append(original_tile + " " + letter + str(number + 1))
+                    beta = min(beta, best_value)
+                    if beta <= alpha:
+                        return best_value and self.best_moves
         return best_value and self.best_moves
 
     def play_imaginary_turn_placing(self, board, letter, number, color):
@@ -465,29 +519,29 @@ class AI(Player):
             return -1
 
     def get_board_heuristic(self, board):
-        total_heuristic = 0
+        board_heuristic = 0
         for number in range(1, len(board.tiles)+1):
             for letter in board.letterMap:
                 if board.get_tile(letter, number).get_color() is not TileColor.BLANK:
                     current_color = board.get_tile(letter, number).get_color()
-                    current_heuristic = 0
+                    tile_heuristic = 0
                     blocked = False
 
                     if board.is_valid_position((chr(ord(letter) - 1)), number - 1):  # try the bottom left
                         if board.get_tile((chr(ord(letter) - 1)), number - 1).get_color() == current_color:
-                            current_heuristic += 1
+                            tile_heuristic += 1
 
                     if board.is_valid_position((chr(ord(letter) - 1)), number + 1):  # try top left
                         if board.get_tile((chr(ord(letter) - 1)), number + 1).get_color() == current_color:
-                            current_heuristic += 1
+                            tile_heuristic += 1
 
                     if board.is_valid_position((chr(ord(letter) + 1)), number - 1):  # try bottom right
                         if board.get_tile((chr(ord(letter) + 1)), number - 1).get_color() == current_color:
-                            current_heuristic += 1
+                            tile_heuristic += 1
 
                     if board.is_valid_position((chr(ord(letter) + 1)), number + 1):  # try top right
                         if board.get_tile((chr(ord(letter) + 1)), number + 1).get_color() == current_color:
-                            current_heuristic += 1
+                            tile_heuristic += 1
 
                     # check block condition
                     if board.is_valid_position((chr(ord(letter) + 1)), number):  # try right
@@ -496,12 +550,12 @@ class AI(Player):
                                 if board.get_tile((chr(ord(letter) - 1)), number).get_color() != current_color:
                                     blocked = True
 
-                    if current_heuristic == 4 and not blocked:
-                        current_heuristic += 1000
+                    if tile_heuristic == 4 and not blocked:
+                        tile_heuristic += 1000
 
                     if current_color is self.opponent_color:
-                        total_heuristic += current_heuristic
+                        board_heuristic += tile_heuristic
                     else:
-                        total_heuristic -= current_heuristic
+                        board_heuristic -= tile_heuristic
         # print('heuristic value = ' + str(total_heuristic))
-        return total_heuristic
+        return board_heuristic
