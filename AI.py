@@ -100,7 +100,8 @@ class AI(Player):
                             and self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == self.opponent_color:
                         # check the possible position to move the tile_token
                         self.check_max_moving_heuristic(letter, number, board, depth, alpha, best_value)
-                    elif self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == TileColor.BLANK:
+                    elif self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == TileColor.BLANK \
+                            and len(self.played_pieces) != self.max_tokens:  # place tokens only if it didn't play all tokens
                         new_board = self.play_imaginary_turn_placing(board, letter, number, self.opponent_color)
                         current_value = self.alpha_beta(new_board, depth + 1, alpha, beta, False)
                         if current_value > best_value:
@@ -125,7 +126,8 @@ class AI(Player):
                             and self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == self.color:
                         # check the possible position to move the tile_token
                         self.check_min_moving_heuristic(letter, number, board, depth, beta, best_value)
-                    elif self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == TileColor.BLANK:
+                    elif self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == TileColor.BLANK \
+                            and len(self.played_pieces) != self.max_tokens:  # place tokens only if it didn't play all tokens
                         new_board = self.play_imaginary_turn_placing(board, letter, number, self.color)
                         current_value = self.alpha_beta(new_board, depth + 1, alpha, beta, True)
                         if current_value < best_value:
