@@ -32,7 +32,7 @@ class AI(Player):
             print("Player", self.name, "Played Pieces", self.played_pieces)
         self.best_moves = []  # reset the best moves
         imaginary_board = copy.deepcopy(self.board)
-        if coin_toss == 1:  # AI goes second
+        if coin_toss == 2:  # AI goes second
             self.alpha_beta(imaginary_board, 1, -500000000000000000, 500000000000000000, False)
         else:  # AI goes first
             self.alpha_beta(imaginary_board, 1, -500000000000000000, 500000000000000000, True)
