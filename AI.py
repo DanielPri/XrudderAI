@@ -25,14 +25,17 @@ class AI(Player):
     #   (remember, moves are different from placing)
     # at the end, the current_heuristic_value with the best value will be the one used to create the move
 
-    def play_turn(self, moves):
+    def play_turn(self, moves, coin_toss):
         played = False
 
         if len(self.played_pieces) != 0:
             print("Player", self.name, "Played Pieces", self.played_pieces)
         self.best_moves = []  # reset the best moves
         imaginary_board = copy.deepcopy(self.board)
-        self.alpha_beta(imaginary_board, 1, -500000000000000000, 500000000000000000, False)
+        if coin_toss == 2:  # AI goes second
+            self.alpha_beta(imaginary_board, 1, -500000000000000000, 500000000000000000, False)
+        else:  # AI goes first
+            self.alpha_beta(imaginary_board, 1, -500000000000000000, 500000000000000000, True)
         print("Best moves for AI: " + str(self.best_moves))
         while not played:
             if not self.best_moves:
@@ -47,10 +50,10 @@ class AI(Player):
                     old_position = position[:2]
                     new_position = position[-2:]
                 if len(position) == 6:
-                    if position[3] == " ":
+                    if position[2] == " ":
                         old_position = position[:2]
                         new_position = position[-3:]
-                    if position[4] == " ":
+                    if position[3] == " ":
                         old_position = position[:3]
                         new_position = position[-2:]
                 if len(position) == 7:
@@ -288,9 +291,9 @@ class AI(Player):
                         #print("Current value: " + str(current_value))
                         best_value = current_value
                         self.best_moves.clear()
-                        self.best_moves.append(original_tile + chr(ord(letter) - 1) + str(number - 1))
+                        self.best_moves.append(original_tile + " " + chr(ord(letter) - 1) + str(number - 1))
                     elif current_value == best_value:
-                        self.best_moves.append(original_tile + chr(ord(letter) - 1) + str(number - 1))
+                        self.best_moves.append(original_tile + " " +chr(ord(letter) - 1) + str(number - 1))
             # bottom
             if board.is_valid_position(letter, number - 1):
                 if self.select_tile_on_imaginary_board(letter + str(number - 1), board).get_color() == TileColor.BLANK:

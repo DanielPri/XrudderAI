@@ -3,6 +3,7 @@ from Player import Player
 from AI import AI
 from DebugMode import *
 import time
+import random
 
 
 class Game:
@@ -92,42 +93,82 @@ class Game:
             player2_turn += 1
 
     def play_with_ai(self):
+        coin_toss = random.randint(1, 2)
         player1_turn = 1
         ai_turn = 1
-        while True:
-            self.board.draw()
-            if self.player1.finished and self.AI.finished:
-                print("Game finished in a draw!")
-                self.game_over = True
-                break
-            print("Player " + self.player1.name, 'Turn', player1_turn)
-            current_moves = self.moves
-            self.moves += self.player1.play_turn(self.moves)
-            if len(self.player1.played_pieces) >= 5 or len(self.AI.played_pieces) >= 5:
-                self.win_condition(self.player1.name, self.player1.played_pieces, self.player1.color, self.AI.color)
-                if self.game_over:
+        if coin_toss == 1:  # player goes first
+            print("Player " + self.player1.name + " will move first")
+            while True:
+                self.board.draw()
+                if self.player1.finished and self.AI.finished:
+                    print("Game finished in a draw!")
+                    self.game_over = True
                     break
-                elif not current_moves == self.moves:
-                    self.win_condition(self.AI.name, self.AI.played_pieces, self.AI.color, self.player1.color)
-                    if self.game_over:
-                        break
-            player1_turn += 1
-
-            self.board.draw()
-            print("Player " + self.AI.name, 'Turn', ai_turn)
-            current_moves = self.moves
-            ai_turn_start = time.perf_counter()
-            self.moves += self.AI.play_turn(self.moves)
-            print("AI turn took " + str(time.perf_counter() - ai_turn_start) + " seconds")
-            if len(self.player1.played_pieces) >= 5 or len(self.AI.played_pieces) >= 5:
-                self.win_condition(self.AI.name, self.AI.played_pieces, self.AI.color, self.player1.color)
-                if self.game_over:
-                    break
-                elif not current_moves == self.moves:
+                print("Player " + self.player1.name, 'Turn', player1_turn)
+                current_moves = self.moves
+                self.moves += self.player1.play_turn(self.moves)
+                if len(self.player1.played_pieces) >= 5 or len(self.AI.played_pieces) >= 5:
                     self.win_condition(self.player1.name, self.player1.played_pieces, self.player1.color, self.AI.color)
                     if self.game_over:
                         break
-            ai_turn += 1
+                    elif not current_moves == self.moves:
+                        self.win_condition(self.AI.name, self.AI.played_pieces, self.AI.color, self.player1.color)
+                        if self.game_over:
+                            break
+                player1_turn += 1
+
+                self.board.draw()
+                print("Player " + self.AI.name, 'Turn', ai_turn)
+                current_moves = self.moves
+                ai_turn_start = time.perf_counter()
+                self.moves += self.AI.play_turn(self.moves, coin_toss)
+                print("AI turn took " + str(time.perf_counter() - ai_turn_start) + " seconds")
+                if len(self.player1.played_pieces) >= 5 or len(self.AI.played_pieces) >= 5:
+                    self.win_condition(self.AI.name, self.AI.played_pieces, self.AI.color, self.player1.color)
+                    if self.game_over:
+                        break
+                    elif not current_moves == self.moves:
+                        self.win_condition(self.player1.name, self.player1.played_pieces, self.player1.color, self.AI.color)
+                        if self.game_over:
+                            break
+                ai_turn += 1
+        else:  # player goes second
+            print("AI will move first")
+            while True:
+                self.board.draw()
+                print("Player " + self.AI.name, 'Turn', ai_turn)
+                current_moves = self.moves
+                ai_turn_start = time.perf_counter()
+                self.moves += self.AI.play_turn(self.moves, coin_toss)
+                print("AI turn took " + str(time.perf_counter() - ai_turn_start) + " seconds")
+                if len(self.player1.played_pieces) >= 5 or len(self.AI.played_pieces) >= 5:
+                    self.win_condition(self.AI.name, self.AI.played_pieces, self.AI.color, self.player1.color)
+                    if self.game_over:
+                        break
+                    elif not current_moves == self.moves:
+                        self.win_condition(self.player1.name, self.player1.played_pieces, self.player1.color,
+                                           self.AI.color)
+                        if self.game_over:
+                            break
+                ai_turn += 1
+
+                self.board.draw()
+                if self.player1.finished and self.AI.finished:
+                    print("Game finished in a draw!")
+                    self.game_over = True
+                    break
+                print("Player " + self.player1.name, 'Turn', player1_turn)
+                current_moves = self.moves
+                self.moves += self.player1.play_turn(self.moves)
+                if len(self.player1.played_pieces) >= 5 or len(self.AI.played_pieces) >= 5:
+                    self.win_condition(self.player1.name, self.player1.played_pieces, self.player1.color, self.AI.color)
+                    if self.game_over:
+                        break
+                    elif not current_moves == self.moves:
+                        self.win_condition(self.AI.name, self.AI.played_pieces, self.AI.color, self.player1.color)
+                        if self.game_over:
+                            break
+                player1_turn += 1
 
     def win_condition(self, name, played_pieces, player_color, opponent_color):
         letter_map = self.board.get_letter_map()
