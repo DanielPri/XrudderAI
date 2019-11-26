@@ -42,7 +42,8 @@ class Game:
                 name = "AI"
                 self.AI = AI(self.board, name, TileColor.BLACK, TileColor.WHITE)
                 set_board(self.board, self.player1, self.AI)
-                self.play_with_ai()
+                coin_toss = int(input("Please choose if you want the AI to go first (1) or second (2): "))
+                self.play_with_ai(coin_toss)
                 break
 
             if num_of_players is 2:

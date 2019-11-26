@@ -10,7 +10,7 @@ class AI(Player):
     def __init__(self, board, name, color, opponent_color):
         super().__init__(board, name, color)
         self.opponent_color = opponent_color
-        self.max_depth = 3
+        self.max_depth = 0
         self.best_moves = []
     # ------------------------------------------------README--------------------------------------------------------
     # how this AI will work:
@@ -103,7 +103,7 @@ class AI(Player):
                     elif self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == TileColor.BLANK \
                             and len(self.played_pieces) != self.max_tokens:  # place tokens only if it didn't play all tokens
                         new_board = self.play_imaginary_turn_placing(board, letter, number, self.opponent_color)
-                        current_value = self.alpha_beta(new_board, depth + 1, alpha, beta, False)
+                        current_value = self.alpha_beta(new_board, depth - 1, alpha, beta, False)
                         if current_value > best_value:
                             # print("place " + letter + str(number))
                             # print("Current value: " + str(current_value))
@@ -129,7 +129,7 @@ class AI(Player):
                     elif self.select_tile_on_imaginary_board(letter + str(number), board).get_color() == TileColor.BLANK \
                             and len(self.played_pieces) != self.max_tokens:  # place tokens only if it didn't play all tokens
                         new_board = self.play_imaginary_turn_placing(board, letter, number, self.color)
-                        current_value = self.alpha_beta(new_board, depth + 1, alpha, beta, True)
+                        current_value = self.alpha_beta(new_board, depth - 1, alpha, beta, True)
                         if current_value < best_value:
                             # print("place " + letter + str(number))
                             # print("Current value: " + str(current_value))
@@ -152,7 +152,7 @@ class AI(Player):
             if board.is_valid_position((chr(ord(letter) - 1)), number + 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) - 1) + str(number + 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) - 1), number + 1, self.opponent_color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, alpha, best_value, False)
+                    current_value = self.alpha_beta(new_board, depth - 1, alpha, best_value, False)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) - 1) + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -165,7 +165,7 @@ class AI(Player):
             if board.is_valid_position((chr(ord(letter) - 1)), number):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) - 1) + str(number), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) - 1), number, self.opponent_color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, alpha, best_value, False)
+                    current_value = self.alpha_beta(new_board, depth - 1, alpha, best_value, False)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) - 1) + str(number))
                         #print("Current value: " + str(current_value))
@@ -178,7 +178,7 @@ class AI(Player):
             if board.is_valid_position((chr(ord(letter) - 1)), number - 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) - 1) + str(number - 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) - 1), number - 1, self.opponent_color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, alpha, best_value, False)
+                    current_value = self.alpha_beta(new_board, depth - 1, alpha, best_value, False)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) - 1) + str(number - 1))
                         #print("Current value: " + str(current_value))
@@ -191,7 +191,7 @@ class AI(Player):
             if board.is_valid_position(letter, number - 1):
                 if self.select_tile_on_imaginary_board(letter + str(number - 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, letter, number - 1, self.opponent_color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, alpha, best_value, False)
+                    current_value = self.alpha_beta(new_board, depth - 1, alpha, best_value, False)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + letter + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -204,7 +204,7 @@ class AI(Player):
             if board.is_valid_position((chr(ord(letter) + 1)), number - 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) + 1) + str(number - 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) + 1), number - 1, self.opponent_color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, alpha, best_value, False)
+                    current_value = self.alpha_beta(new_board, depth - 1, alpha, best_value, False)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) + 1) + str(number - 1))
                         #print("Current value: " + str(current_value))
@@ -217,7 +217,7 @@ class AI(Player):
             if board.is_valid_position((chr(ord(letter) + 1)), number):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) + 1) + str(number), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) + 1), number, self.opponent_color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, alpha, best_value, False)
+                    current_value = self.alpha_beta(new_board, depth - 1, alpha, best_value, False)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) + 1) + str(number))
                         #print("Current value: " + str(current_value))
@@ -230,7 +230,7 @@ class AI(Player):
             if board.is_valid_position((chr(ord(letter) + 1)), number + 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) + 1) + str(number + 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) + 1), number + 1, self.opponent_color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, alpha, best_value, False)
+                    current_value = self.alpha_beta(new_board, depth - 1, alpha, best_value, False)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) + 1) + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -243,7 +243,7 @@ class AI(Player):
             if board.is_valid_position(letter, number + 1):
                 if self.select_tile_on_imaginary_board(letter + str(number + 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, letter, number + 1, self.opponent_color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, alpha, best_value, False)
+                    current_value = self.alpha_beta(new_board, depth - 1, alpha, best_value, False)
                     if current_value > best_value:
                         #print("move " + original_tile + " " + letter + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -261,7 +261,7 @@ class AI(Player):
             if board.is_valid_position((chr(ord(letter) - 1)), number + 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) - 1) + str(number + 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) - 1), number + 1, self.color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, beta, best_value, True)
+                    current_value = self.alpha_beta(new_board, depth - 1, beta, best_value, True)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) - 1) + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -274,7 +274,7 @@ class AI(Player):
             if board.is_valid_position((chr(ord(letter) - 1)), number):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) - 1) + str(number), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) - 1), number, self.color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, beta, best_value, True)
+                    current_value = self.alpha_beta(new_board, depth - 1, beta, best_value, True)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) - 1) + str(number))
                         #print("Current value: " + str(current_value))
@@ -287,7 +287,7 @@ class AI(Player):
             if board.is_valid_position((chr(ord(letter) - 1)), number - 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) - 1) + str(number - 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) - 1), number - 1, self.color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, beta, best_value, True)
+                    current_value = self.alpha_beta(new_board, depth - 1, beta, best_value, True)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) - 1) + str(number - 1))
                         #print("Current value: " + str(current_value))
@@ -300,7 +300,7 @@ class AI(Player):
             if board.is_valid_position(letter, number - 1):
                 if self.select_tile_on_imaginary_board(letter + str(number - 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, letter, number - 1, self.color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, beta, best_value, True)
+                    current_value = self.alpha_beta(new_board, depth - 1, beta, best_value, True)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + letter + str(number - 1))
                         #print("Current value: " + str(current_value))
@@ -313,7 +313,7 @@ class AI(Player):
             if board.is_valid_position((chr(ord(letter) + 1)), number - 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) + 1) + str(number - 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) + 1), number - 1, self.color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, beta, best_value, True)
+                    current_value = self.alpha_beta(new_board, depth - 1, beta, best_value, True)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) + 1) + str(number - 1))
                         #print("Current value: " + str(current_value))
@@ -326,7 +326,7 @@ class AI(Player):
             if board.is_valid_position((chr(ord(letter) + 1)), number):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) + 1) + str(number), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) + 1), number, self.color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, beta, best_value, True)
+                    current_value = self.alpha_beta(new_board, depth - 1, beta, best_value, True)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) + 1) + str(number))
                         #print("Current value: " + str(current_value))
@@ -339,7 +339,7 @@ class AI(Player):
             if board.is_valid_position((chr(ord(letter) + 1)), number + 1):
                 if self.select_tile_on_imaginary_board(chr(ord(letter) + 1) + str(number + 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, chr(ord(letter) + 1), number + 1, self.color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, beta, best_value, True)
+                    current_value = self.alpha_beta(new_board, depth - 1, beta, best_value, True)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + chr(ord(letter) + 1) + str(number + 1))
                         #print("Current value: " + str(current_value))
@@ -352,7 +352,7 @@ class AI(Player):
             if board.is_valid_position(letter, number + 1):
                 if self.select_tile_on_imaginary_board(letter + str(number + 1), board).get_color() == TileColor.BLANK:
                     new_board = self.play_imaginary_turn_moving(board, letter, number + 1, self.color, original_tile)
-                    current_value = self.alpha_beta(new_board, depth + 1, beta, best_value, True)
+                    current_value = self.alpha_beta(new_board, depth - 1, beta, best_value, True)
                     if current_value < best_value:
                         #print("move " + original_tile + " " + letter + str(number + 1))
                         #print("Current value: " + str(current_value))
