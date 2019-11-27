@@ -481,6 +481,8 @@ class AI(Player):
                     current_color = board.get_tile(letter, number).get_color()
                     current_heuristic = 0
                     blocked = False
+                    left_block = False
+                    right_block = False
 
                     if len(self.played_pieces) == 0:  # prevent AI from starting at edge of board (prevents edge cases)
                         current_heuristic += self.get_bottom_left_heuristic(board, letter, number, current_color)
@@ -501,18 +503,29 @@ class AI(Player):
                             if board.get_tile((chr(ord(letter) + 1)), number + 1).get_color() == current_color:
                                 current_heuristic += 1
 
-                    # check block condition
-                    if board.is_valid_position((chr(ord(letter) + 1)), number):  # try right
-                        if board.get_tile((chr(ord(letter) + 1)), number).get_color() == self.opponent_color:
+                    # check block condition (ensure current color is blocked by opposite color)
+                        if current_color == TileColor.BLACK:
+                            if board.is_valid_position((chr(ord(letter) + 1)), number):  # try right
+                                if board.get_tile((chr(ord(letter) + 1)), number).get_color() == TileColor.WHITE:
+                                    right_block = True
                             if board.is_valid_position((chr(ord(letter) - 1)), number):  # try left
-                                if board.get_tile((chr(ord(letter) - 1)), number).get_color() == self.opponent_color:
-                                    blocked = True
+                                if board.get_tile((chr(ord(letter) - 1)), number).get_color() == TileColor.WHITE:
+                                    left_block = True
+                            if right_block and left_block:
+                                blocked = True
+                        if current_color == TileColor.WHITE:
+                            if board.is_valid_position((chr(ord(letter) + 1)), number):  # try right
+                                if board.get_tile((chr(ord(letter) + 1)), number).get_color() == TileColor.BLACK:
+                                    right_block = True
+                            if board.is_valid_position((chr(ord(letter) - 1)), number):  # try left
+                                if board.get_tile((chr(ord(letter) - 1)), number).get_color() == TileColor.BLACK:
+                                    left_block = True
+                            if right_block and left_block:
+                                blocked = True
 
-                    if letter != "A" or letter != "L":  # do not increase heuristic if token is on edge of board
-                        if number != 1 or letter != 10:
-                            if current_heuristic == 4 and not blocked:
+                        if current_heuristic == 4 and not blocked:
                                 current_heuristic += 1000
-                            elif current_heuristic == 3:  # prioritize X formation
+                        elif current_heuristic == 3 and not blocked:  # prioritize X formation
                                 current_heuristic += 500
 
                     if current_color is self.opponent_color:
