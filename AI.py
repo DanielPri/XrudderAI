@@ -12,6 +12,8 @@ class AI(Player):
         self.opponent_color = opponent_color
         self.max_depth = 3
         self.best_moves = []
+        self.MIN = -500000000000000000
+        self.MAX = 500000000000000000
     # ------------------------------------------------README--------------------------------------------------------
     # how this AI will work:
     # Decide next move creates a board with a token in first unoccupied tile
@@ -33,9 +35,9 @@ class AI(Player):
         self.best_moves = []  # reset the best moves
         imaginary_board = copy.deepcopy(self.board)
         if coin_toss == 2:  # AI goes second
-            self.mini_max(imaginary_board, 1, False, -500000000000000000, 500000000000000000)
+            self.mini_max(imaginary_board, 1, False, self.MIN, self.MAX)
         else:  # AI goes first
-            self.mini_max(imaginary_board, 1, True, -500000000000000000, 500000000000000000)
+            self.mini_max(imaginary_board, 1, True, self.MIN, self.MAX)
         print("Best moves for AI: " + str(self.best_moves))
         while not played:
             if not self.best_moves:
@@ -93,7 +95,8 @@ class AI(Player):
             return self.get_board_heuristic(board)
 
         if is_maximizing_player:
-            best_value = -500000000000000000
+            exit_loop = False
+            best_value = self.MIN
             for number in range(1, len(self.board.tiles) + 1):
                 for letter in self.board.letterMap:
                     if self.select_tile_on_imaginary_board(letter + str(number), board).get_color() != TileColor.BLANK \
@@ -112,14 +115,16 @@ class AI(Player):
                             self.best_moves.append(letter + str(number))
                         elif current_value == best_value:
                             self.best_moves.append(letter + str(number))
-                    else:
-                        continue
                     alpha = max(alpha, best_value)
                     if beta <= alpha:
+                        exit_loop = True
                         break
+                if exit_loop:
+                    break
             return best_value
         else:
-            best_value = 500000000000000000
+            exit_loop = False
+            best_value = self.MAX
             for number in range(1, len(self.board.tiles) + 1):
                 for letter in self.board.letterMap:
                     if self.select_tile_on_imaginary_board(letter + str(number), board).get_color() != TileColor.BLANK \
@@ -138,11 +143,12 @@ class AI(Player):
                             self.best_moves.append(letter + str(number))
                         elif current_value == best_value:
                             self.best_moves.append(letter + str(number))
-                    else:
-                        continue
                     beta = min(beta, best_value)
                     if beta <= alpha:
+                        exit_loop = True
                         break
+                if exit_loop:
+                    break
             return best_value
 
     def check_max_moving_heuristic(self, letter, number, board, depth, best_value, alpha, beta):
@@ -543,14 +549,26 @@ class AI(Player):
                         if board.get_tile((chr(ord(letter) + 1)), number + 1).get_color() == current_color:
                             tile_heuristic += 1
 
+                    is_x = False
+                    if tile_heuristic == 4:
+                        is_x = True
+
                     # check block condition
+                    right_blocked = False
+                    left_blocked = False
                     if board.is_valid_position((chr(ord(letter) + 1)), number):  # try right
                         if board.get_tile((chr(ord(letter) + 1)), number).get_color() != current_color:
-                            if board.is_valid_position((chr(ord(letter) - 1)), number):  # try left
-                                if board.get_tile((chr(ord(letter) - 1)), number).get_color() != current_color:
-                                    blocked = True
+                            right_blocked = True
+                            tile_heuristic -= 0.5
+                    if board.is_valid_position((chr(ord(letter) - 1)), number):  # try left
+                        if board.get_tile((chr(ord(letter) - 1)), number).get_color() != current_color:
+                            left_blocked = True
+                            tile_heuristic -= 0.5
 
-                    if tile_heuristic == 4 and not blocked:
+                    if right_blocked and left_blocked:
+                        blocked = True
+
+                    if is_x and not blocked:
                         tile_heuristic += 1000
 
                     if current_color is self.opponent_color:
