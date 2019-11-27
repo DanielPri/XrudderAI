@@ -114,9 +114,15 @@ class Player:
         if self.select_tile(new_position) is None:
             return False
         position_x = letter_map[position[0]]
-        position_y = int(position[1])
+        if len(position) == 2:
+            position_y = int(position[1])
+        else:
+            position_y = 10
         new_position_x = letter_map[new_position[0]]
-        new_position_y = int(new_position[1])
+        if len(new_position) == 2:
+            new_position_y = int(new_position[1])
+        else:
+            new_position_y = 10
         if position_x - 1 <= new_position_x <= position_x + 1:
             if position_y - 1 <= new_position_y <= position_y + 1:
                 return True
