@@ -216,7 +216,7 @@ class Game:
             if left_exists and right_exists and up_exists and down_exists:
                 if top_left.get_color() == top_right.get_color() == bottom_left.get_color() == bottom_right.get_color() == player_color:
                     if left.get_color() == right.get_color() == opponent_color:
-                        print("Strikethrough at " + str(player_color)[10:15] + " X centered at " + str(iterated_piece) + "!")
+                        print("Strikethrough at " + str(name) + "'s X centered at " + str(iterated_piece) + "!")
                     else:
                         self.board.draw()
                         print("Player " + name + " wins!")

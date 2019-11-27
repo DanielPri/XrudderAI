@@ -40,7 +40,8 @@ class AI(Player):
         while not played:
             if not self.best_moves:
                 print("No best moves available, skipping turn...")
-                # played = True
+                if len(self.played_pieces) == self.max_tokens and moves == self.max_moves:
+                    self.finished = True
                 return 0
             else:
                 position = random.choice(self.best_moves)
@@ -74,7 +75,6 @@ class AI(Player):
                     self.played_pieces.remove(old_position)
                     self.played_pieces.append(new_position)
                     if move_allowed:
-                        # played = True
                         return 1
             elif len(self.played_pieces) == self.max_tokens:
                 print("AI does not have any more tokens to place")
@@ -83,7 +83,6 @@ class AI(Player):
                 print("Proceeding to place a tile at " + str(position))
                 self.play_tile(self.select_tile(position))
                 self.played_pieces.append(position)
-                # played = True
                 return 0
 
     def mini_max(self, board, depth, is_maximizing_player, alpha, beta):
