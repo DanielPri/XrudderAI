@@ -32,9 +32,9 @@ class AI(Player):
             print("Player", self.name, "Played Pieces", self.played_pieces)
         self.best_moves = []  # reset the best moves
         imaginary_board = copy.deepcopy(self.board)
-        if coin_toss == 2:  # AI goes second
+        if coin_toss == 1:  # AI goes first (try to make a X)
             self.mini_max(imaginary_board, 1, False, -500000000000000000, 500000000000000000)
-        else:  # AI goes first
+        else:  # AI goes second (try to block player)
             self.mini_max(imaginary_board, 1, True, -500000000000000000, 500000000000000000)
         print("Best moves for AI: " + str(self.best_moves))
         while not played:
@@ -105,12 +105,13 @@ class AI(Player):
                         new_board = self.play_imaginary_turn_placing(board, letter, number, self.opponent_color)
                         current_value = self.mini_max(new_board, depth + 1, False, alpha, beta)
                         if current_value > best_value:
-                            # print("place " + letter + str(number))
                             # print("Current value: " + str(current_value))
+                            # print("place " + letter + str(number))
                             best_value = current_value
                             self.best_moves.clear()
                             self.best_moves.append(letter + str(number))
                         elif current_value == best_value:
+                            # print("place " + letter + str(number))
                             self.best_moves.append(letter + str(number))
                         if best_value >= beta:
                             break
@@ -132,12 +133,13 @@ class AI(Player):
                         new_board = self.play_imaginary_turn_placing(board, letter, number, self.color)
                         current_value = self.mini_max(new_board, depth + 1, True, alpha, beta)
                         if current_value < best_value:
-                            # print("place " + letter + str(number))
                             # print("Current value: " + str(current_value))
+                            # print("place " + letter + str(number))
                             best_value = current_value
                             self.best_moves.clear()
                             self.best_moves.append(letter + str(number))
                         elif current_value == best_value:
+                            # print("place " + letter + str(number))
                             self.best_moves.append(letter + str(number))
                         if best_value <= alpha:
                             break
@@ -481,31 +483,38 @@ class AI(Player):
                     current_heuristic = 0
                     blocked = False
 
-                    if board.is_valid_position((chr(ord(letter) - 1)), number - 1):  # try the bottom left
-                        if board.get_tile((chr(ord(letter) - 1)), number - 1).get_color() == current_color:
-                            current_heuristic += 1
-
-                    if board.is_valid_position((chr(ord(letter) - 1)), number + 1):  # try top left
-                        if board.get_tile((chr(ord(letter) - 1)), number + 1).get_color() == current_color:
-                            current_heuristic += 1
-
-                    if board.is_valid_position((chr(ord(letter) + 1)), number - 1):  # try bottom right
-                        if board.get_tile((chr(ord(letter) + 1)), number - 1).get_color() == current_color:
-                            current_heuristic += 1
-
-                    if board.is_valid_position((chr(ord(letter) + 1)), number + 1):  # try top right
-                        if board.get_tile((chr(ord(letter) + 1)), number + 1).get_color() == current_color:
-                            current_heuristic += 1
+                    if len(self.played_pieces) == 0:  # prevent AI from starting at edge of board (prevents edge cases)
+                        current_heuristic += self.get_bottom_left_heuristic(board, letter, number, current_color)
+                        current_heuristic += self.get_top_left_heuristic(board, letter, number, current_color)
+                        current_heuristic += self.get_bottom_right_heuristic(board, letter, number, current_color)
+                        current_heuristic += self.get_top_right_heuristic(board, letter, number, current_color)
+                    else:
+                        if board.is_valid_position((chr(ord(letter) - 1)), number - 1):  # try the bottom left
+                            if board.get_tile((chr(ord(letter) - 1)), number - 1).get_color() == current_color:
+                                current_heuristic += 1
+                        if board.is_valid_position((chr(ord(letter) - 1)), number + 1):  # try top left
+                            if board.get_tile((chr(ord(letter) - 1)), number + 1).get_color() == current_color:
+                                current_heuristic += 1
+                        if board.is_valid_position((chr(ord(letter) + 1)), number - 1):  # try bottom right
+                            if board.get_tile((chr(ord(letter) + 1)), number - 1).get_color() == current_color:
+                                current_heuristic += 1
+                        if board.is_valid_position((chr(ord(letter) + 1)), number + 1):  # try top right
+                            if board.get_tile((chr(ord(letter) + 1)), number + 1).get_color() == current_color:
+                                current_heuristic += 1
 
                     # check block condition
                     if board.is_valid_position((chr(ord(letter) + 1)), number):  # try right
-                        if board.get_tile((chr(ord(letter) + 1)), number).get_color() != current_color:
+                        if board.get_tile((chr(ord(letter) + 1)), number).get_color() == self.opponent_color:
                             if board.is_valid_position((chr(ord(letter) - 1)), number):  # try left
-                                if board.get_tile((chr(ord(letter) - 1)), number).get_color() != current_color:
+                                if board.get_tile((chr(ord(letter) - 1)), number).get_color() == self.opponent_color:
                                     blocked = True
 
-                    if current_heuristic == 4 and not blocked:
-                        current_heuristic += 1000
+                    if letter != "A" or letter != "L":  # do not increase heuristic if token is on edge of board
+                        if number != 1 or letter != 10:
+                            if current_heuristic == 4 and not blocked:
+                                current_heuristic += 1000
+                            elif current_heuristic == 3:  # prioritize X formation
+                                current_heuristic += 500
 
                     if current_color is self.opponent_color:
                         total_heuristic += current_heuristic
